@@ -225,54 +225,63 @@
 
     /* ── PRINT ────────────────────────────────────── */
     @media print {
-      @page { margin: 8mm; size: A4 portrait; }
-      html, body {
+      @page { margin: 4mm; size: A4 portrait; }
+      html {
         width: 100%;
         height: 100%;
-        max-height: 100%;
-        overflow: hidden;
         background: white;
-        padding: 0;
         margin: 0;
-        display: block;
+        padding: 0;
+      }
+      body {
+        width: 100%;
+        height: 100%;
+        background: white;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
       }
       .card {
         box-shadow: none;
-        border: 4px double #000;
-        border-radius: 12px;
+        border: none;
+        border-radius: 0;
         width: 100%;
         max-width: 100%;
-        padding: 24px 28px;
+        padding: 8px 10px;
       }
-      .title    { font-size: 80px !important; }
+      .title    { font-size: 88px !important; }
       .subtitle { font-size: 22px !important; }
-      .date-bar { font-size: 32px !important; margin-bottom: 28px !important; padding: 10px 0 !important; }
-      .ornament { font-size: 32px !important; }
+      .date-bar { font-size: 34px !important; margin-bottom: 16px !important; padding: 8px 0 !important; }
+      .ornament { font-size: 30px !important; }
       .cross-wrapper {
-        width: 650px !important;
-        height: 650px !important;
+        width: 730px !important;
+        height: 730px !important;
         margin: 0 auto !important;
       }
       .num-outer {
-        width: 138px !important; height: 138px !important;
-        font-size: 86px !important;
+        width: 155px !important; height: 155px !important;
+        font-size: 96px !important;
         background: #000 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
       .num-inner {
-        width: 116px !important; height: 116px !important;
-        font-size: 72px !important;
+        width: 130px !important; height: 130px !important;
+        font-size: 82px !important;
         border-width: 4px !important;
         border-color: #000 !important;
         color: #000 !important;
       }
-      #groupTop    { transform: translateY(94px) !important; }
-      #groupRight  { transform: translateX(-94px) !important; }
-      #groupBottom { transform: translateY(-94px) !important; }
-      #groupLeft   { transform: translateX(94px) !important; }
-      .inner-label { color: #222 !important; font-size: 18px !important; font-weight: 900 !important; letter-spacing: 3px !important; }
-      .cross-svg line { stroke: #000 !important; stroke-width: 3.5px !important; }
+      #groupTop    { transform: translateY(106px) !important; }
+      #groupRight  { transform: translateX(-106px) !important; }
+      #groupBottom { transform: translateY(-106px) !important; }
+      #groupLeft   { transform: translateX(106px) !important; }
+      .num { padding-bottom: 0.16em !important; }
+      .inner-label { color: #222 !important; font-size: 20px !important; font-weight: 900 !important; letter-spacing: 3px !important; }
+      .cross-svg line { stroke: #000 !important; stroke-width: 4px !important; }
       .title, .ornament { color: #000 !important; }
       .no-print { display: none !important; }
       .divider, .legend-grid { display: none !important; }
