@@ -226,65 +226,56 @@
     /* ── PRINT ────────────────────────────────────── */
     @media print {
       @page { margin: 4mm; size: A4 portrait; }
-      html {
+      html, body {
         width: 100%;
         height: 100%;
         background: white;
         margin: 0;
         padding: 0;
+        overflow: hidden;
       }
       body {
-        width: 100%;
-        height: 100%;
-        background: white;
-        margin: 0;
-        padding: 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        overflow: hidden;
-      }
-      @media (max-width: 767px) {
-        body { display: block; height: auto; }
       }
       .card {
         box-shadow: none;
         border: none;
         border-radius: 0;
         width: 100%;
-        max-width: 100%;
-        padding: 8px 10px;
+        padding: 2mm 3mm;
       }
-      .title    { font-size: 88px !important; }
-      .subtitle { font-size: 22px !important; }
-      .date-bar { font-size: 34px !important; margin-bottom: 16px !important; padding: 8px 0 !important; }
-      .ornament { font-size: 30px !important; }
+      .title    { font-size: 66pt !important; }
+      .subtitle { font-size: 17pt !important; }
+      .date-bar { font-size: 26pt !important; margin-bottom: 4mm !important; padding: 2mm 0 !important; }
+      .ornament { font-size: 23pt !important; }
       .cross-wrapper {
-        width: 730px !important;
-        height: 730px !important;
+        width: 180mm !important;
+        height: 180mm !important;
         margin: 0 auto !important;
       }
       .num-outer {
-        width: 155px !important; height: 155px !important;
-        font-size: 96px !important;
+        width: 40mm !important; height: 40mm !important;
+        font-size: 72pt !important;
         background: #000 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
       .num-inner {
-        width: 130px !important; height: 130px !important;
-        font-size: 82px !important;
-        border-width: 4px !important;
+        width: 34mm !important; height: 34mm !important;
+        font-size: 62pt !important;
+        border-width: 1mm !important;
         border-color: #000 !important;
         color: #000 !important;
       }
-      #groupTop    { transform: translateY(106px) !important; }
-      #groupRight  { transform: translateX(-106px) !important; }
-      #groupBottom { transform: translateY(-106px) !important; }
-      #groupLeft   { transform: translateX(106px) !important; }
+      #groupTop    { transform: translateY(27mm) !important; }
+      #groupRight  { transform: translateX(-27mm) !important; }
+      #groupBottom { transform: translateY(-27mm) !important; }
+      #groupLeft   { transform: translateX(27mm) !important; }
       .num { padding-bottom: 0.16em !important; }
-      .inner-label { color: #222 !important; font-size: 20px !important; font-weight: 900 !important; letter-spacing: 3px !important; }
-      .cross-svg line { stroke: #000 !important; stroke-width: 4px !important; }
+      .inner-label { color: #222 !important; font-size: 15pt !important; font-weight: 900 !important; letter-spacing: 1mm !important; }
+      .cross-svg line { stroke: #000 !important; stroke-width: 1mm !important; }
       .title, .ornament { color: #000 !important; }
       .no-print { display: none !important; }
       .divider, .legend-grid { display: none !important; }
@@ -476,26 +467,6 @@
       wrapper.style.marginBottom    = `${(scale - 1) * base}px`;
     }
     window.addEventListener('resize', scaleCross);
-
-    // Ajuste de cruz antes/después de imprimir
-    const PRINT_BASE = 730;
-    window.addEventListener('beforeprint', function () {
-      const wrapper = document.querySelector('.cross-wrapper');
-      const available = window.innerWidth * 0.88;
-      const scale = Math.min(1, available / PRINT_BASE);
-      wrapper.style.setProperty('width',  PRINT_BASE + 'px', 'important');
-      wrapper.style.setProperty('height', PRINT_BASE + 'px', 'important');
-      wrapper.style.setProperty('transform', `scale(${scale})`, 'important');
-      wrapper.style.setProperty('transform-origin', 'top center', 'important');
-      wrapper.style.setProperty('margin-bottom', `${(scale - 1) * PRINT_BASE}px`, 'important');
-    });
-    window.addEventListener('afterprint', function () {
-      const wrapper = document.querySelector('.cross-wrapper');
-      ['width','height','transform','transform-origin','margin-bottom'].forEach(p =>
-        wrapper.style.removeProperty(p)
-      );
-      scaleCross();
-    });
 
     // Boot
     goToday();
