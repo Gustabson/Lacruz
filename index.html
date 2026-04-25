@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Cruz – Tombola</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: radial-gradient(ellipse at center, #2a0505 0%, #0d0101 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* ── CARD ─────────────────────────────────────── */
+    .card {
+      background: #fffef8;
+      border: 5px double #8B0000;
+      border-radius: 18px;
+      padding: 36px 44px 32px;
+      width: 440px;
+      max-width: 100%;
+      box-shadow: 0 0 0 1px #8B0000, 0 24px 64px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    /* ── HEADER ───────────────────────────────────── */
+    .ornament { color: #c0392b; font-size: 18px; letter-spacing: 6px; }
+    .title {
+      font-size: 40px;
+      font-weight: bold;
+      color: #8B0000;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      line-height: 1;
+      margin: 4px 0 2px;
+    }
+    .subtitle {
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: #aaa;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .date-bar {
+      border-top: 1px solid #e0d8cc;
+      border-bottom: 1px solid #e0d8cc;
+      padding: 8px 0;
+      font-size: 17px;
+      color: #555;
+      font-style: italic;
+      margin-bottom: 28px;
+      letter-spacing: 1px;
+    }
+
+    /* ── CROSS ────────────────────────────────────── */
+    .cross-wrapper {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      margin: 0 auto 28px;
+    }
+
+    .cross-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* 3×3 grid overlay */
+    .cross-grid {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+    }
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Numbers */
+    .num {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      line-height: 1;
+      font-size: 36px;
+      transition: transform .15s;
+    }
+    .num-inner {
+      background: #fffef8;
+      color: #8B0000;
+      border: 3px solid #8B0000;
+      font-size: 32px;
+      width: 56px;
+      height: 56px;
+    }
+    .inner-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    #groupTop { flex-direction: column-reverse; }
+    .inner-label {
+      font-size: 10px;
+      font-weight: bold;
+      color: #aaa;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-style: normal;
+      font-family: 'Georgia', serif;
+    }
+    #groupTop    { transform: translateY(48px); }
+    #groupRight  { transform: translateX(-48px); }
+    #groupBottom { transform: translateY(-48px); }
+    #groupLeft   { transform: translateX(48px); }
+    .num-outer {
+      background: #8B0000;
+      color: #fff;
+      font-size: 40px;
+      width: 66px;
+      height: 66px;
+      box-shadow: 0 4px 12px rgba(139,0,0,0.35);
+    }
+
+    /* ── DIVIDER ──────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid #e0d8cc;
+      margin: 0 0 20px;
+    }
+
+    /* ── LEGEND (small text below cross) ─────────── */
+    .legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 16px;
+      font-size: 11px;
+      color: #999;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .legend-grid span { display: block; }
+    .legend-grid strong { color: #8B0000; }
+
+    /* ── CONTROLS ─────────────────────────────────── */
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .controls input[type="date"] {
+      padding: 8px 12px;
+      border: 2px solid #c0392b;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #333;
+      background: #fff;
+      cursor: pointer;
+      outline: none;
+    }
+    .controls input[type="date"]:focus { border-color: #8B0000; }
+
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: filter .15s, transform .1s;
+    }
+    .btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-update { background: #8B0000; color: #fff; }
+    .btn-today  { background: #c0392b; color: #fff; }
+    .btn-print  { background: #333;    color: #fff; }
+
+    /* ── FOOTER ───────────────────────────────────── */
+    .footer-note {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #bbb;
+      letter-spacing: 1px;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 500px) {
+      body { padding: 12px; }
+      .card { padding: 24px 18px 20px; }
+      .title { font-size: 28px; letter-spacing: 5px; }
+      .subtitle { font-size: 10px; letter-spacing: 3px; }
+      .date-bar { font-size: 13px; margin-bottom: 18px; }
+      .ornament { font-size: 14px; letter-spacing: 4px; }
+      .controls { gap: 8px; }
+      .btn { padding: 8px 14px; font-size: 13px; }
+      .controls input[type="date"] { font-size: 13px; padding: 7px 10px; }
+      .footer-note { font-size: 10px; }
+    }
+
+    /* ── PRINT ────────────────────────────────────── */
+    @media print {
+      @page { margin: 8mm; size: A4 portrait; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        background: white;
+        padding: 0;
+        margin: 0;
+        display: block;
+      }
+      .card {
+        box-shadow: none;
+        border: 4px double #000;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 100%;
+        padding: 24px 28px;
+      }
+      .title    { font-size: 80px !important; }
+      .subtitle { font-size: 22px !important; }
+      .date-bar { font-size: 32px !important; margin-bottom: 28px !important; padding: 10px 0 !important; }
+      .ornament { font-size: 32px !important; }
+      .cross-wrapper {
+        width: 650px !important;
+        height: 650px !important;
+        margin: 0 auto !important;
+      }
+      .num-outer {
+        width: 138px !important; height: 138px !important;
+        font-size: 86px !important;
+        background: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .num-inner {
+        width: 116px !important; height: 116px !important;
+        font-size: 72px !important;
+        border-width: 4px !important;
+        border-color: #000 !important;
+        color: #000 !important;
+      }
+      #groupTop    { transform: translateY(94px) !important; }
+      #groupRight  { transform: translateX(-94px) !important; }
+      #groupBottom { transform: translateY(-94px) !important; }
+      #groupLeft   { transform: translateX(94px) !important; }
+      .inner-label { color: #222 !important; font-size: 18px !important; font-weight: 900 !important; letter-spacing: 3px !important; }
+      .cross-svg line { stroke: #000 !important; stroke-width: 3.5px !important; }
+      .title, .ornament { color: #000 !important; }
+      .no-print { display: none !important; }
+      .divider, .legend-grid { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <!-- Header -->
+    <div class="ornament">✦ ✦ ✦</div>
+    <div class="title">La Cruz</div>
+    <div class="subtitle">Números para Tombola</div>
+    <div class="date-bar" id="dateDisplay"></div>
+
+    <!-- Cross diagram -->
+    <div class="cross-wrapper">
+      <svg class="cross-svg" viewBox="0 0 320 320">
+        <!-- TL (53,53) → BR (267,267) -->
+        <line x1="53" y1="53" x2="267" y2="267"
+              stroke="#8B0000" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- TR (267,53) → BL (53,267) -->
+        <line x1="267" y1="53" x2="53" y2="267"
+              stroke="#8B0000" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+
+      <div class="cross-grid">
+        <!-- Row 1 -->
+        <div class="cell"><div class="num num-outer" id="outerTL"></div></div>
+        <div class="cell">
+          <div class="inner-group" id="groupTop">
+            <div class="num num-inner" id="innerTop"></div>
+            <div class="inner-label">DÍA</div>
+          </div>
+        </div>
+        <div class="cell"><div class="num num-outer" id="outerTR"></div></div>
+        <!-- Row 2 -->
+        <div class="cell">
+          <div class="inner-group" id="groupLeft">
+            <div class="num num-inner" id="innerLeft"></div>
+            <div class="inner-label">SUMA</div>
+          </div>
+        </div>
+        <div class="cell"><!-- center empty --></div>
+        <div class="cell">
+          <div class="inner-group" id="groupRight">
+            <div class="num num-inner" id="innerRight"></div>
+            <div class="inner-label">MES</div>
+          </div>
+        </div>
+        <!-- Row 3 -->
+        <div class="cell"><div class="num num-outer" id="outerBL"></div></div>
+        <div class="cell">
+          <div class="inner-group" id="groupBottom">
+            <div class="num num-inner" id="innerBottom"></div>
+            <div class="inner-label">AÑO</div>
+          </div>
+        </div>
+        <div class="cell"><div class="num num-outer" id="outerBR"></div></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Legend -->
+    <div class="legend-grid no-print">
+      <span><strong>Arriba</strong> = suma dígitos día</span>
+      <span><strong>Derecha</strong> = suma dígitos mes</span>
+      <span><strong>Abajo</strong> = suma dígitos año</span>
+      <span><strong>Izquierda</strong> = suma de los 3 anteriores</span>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls no-print">
+      <input type="date" id="datePicker" title="Seleccionar fecha manualmente" />
+      <button class="btn btn-update" onclick="applyDate()">Calcular</button>
+      <button class="btn btn-today"  onclick="goToday()">Hoy</button>
+      <button class="btn btn-print"  onclick="window.print()">🖨 Imprimir</button>
+    </div>
+
+    <div class="footer-note no-print">
+      Se actualiza automáticamente cada día a medianoche
+    </div>
+
+  </div>
+
+  <script>
+    function digitSum(n) {
+      n = Math.abs(Math.round(n));
+      while (n >= 10) {
+        n = String(n).split('').reduce((sum, d) => sum + parseInt(d, 10), 0);
+      }
+      return n;
+    }
+
+    function compute(date) {
+      const day   = date.getDate();
+      const month = date.getMonth() + 1;
+      const year  = date.getFullYear();
+
+      // Inner (centre cross)
+      const top    = digitSum(day);                       // sum of day digits
+      const right  = digitSum(month);                     // sum of month digits
+      const bottom = digitSum(year);                      // sum of year digits
+      const left   = digitSum(top + right + bottom);      // sum of the three above
+
+      // Outer tips (clockwise: TL, TR, BR, BL)
+      // Each tip = digitSum of its two adjacent inner values
+      const outerTL = digitSum(left + bottom);   // left + bottom
+      const outerTR = digitSum(left + top);      // left + top  (= 3+7=10→1)
+      const outerBR = digitSum(top + right);     // top  + right (= 7+4=11→2)
+      const outerBL = digitSum(right + bottom);  // right + bottom
+
+      return { top, right, bottom, left, outerTL, outerTR, outerBR, outerBL };
+    }
+
+    function formatDateSpanish(date) {
+      const days   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+      const months = ['enero','febrero','marzo','abril','mayo','junio',
+                      'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      const dd  = String(date.getDate()).padStart(2, '0');
+      const mm  = String(date.getMonth() + 1).padStart(2, '0');
+      const yyyy = date.getFullYear();
+      const weekday = days[date.getDay()];
+      const monthName = months[date.getMonth()];
+      return `${weekday}, ${dd} de ${monthName} de ${yyyy}`;
+    }
+
+    function render(date) {
+      const n = compute(date);
+
+      document.getElementById('innerTop').textContent    = n.top;
+      document.getElementById('innerRight').textContent  = n.right;
+      document.getElementById('innerBottom').textContent = n.bottom;
+      document.getElementById('innerLeft').textContent   = n.left;
+
+      document.getElementById('outerTL').textContent     = n.outerTL;
+      document.getElementById('outerTR').textContent     = n.outerTR;
+      document.getElementById('outerBR').textContent     = n.outerBR;
+      document.getElementById('outerBL').textContent     = n.outerBL;
+      document.getElementById('dateDisplay').textContent = formatDateSpanish(date);
+    }
+
+    function localDate(y, m, d) { return new Date(y, m - 1, d); }
+
+    function pickerToDate(val) {
+      const [y, m, d] = val.split('-').map(Number);
+      return localDate(y, m, d);
+    }
+
+    function applyDate() {
+      const val = document.getElementById('datePicker').value;
+      if (val) render(pickerToDate(val));
+    }
+
+    function goToday() {
+      const t = new Date();
+      const isoStr = [
+        t.getFullYear(),
+        String(t.getMonth()+1).padStart(2,'0'),
+        String(t.getDate()).padStart(2,'0')
+      ].join('-');
+      document.getElementById('datePicker').value = isoStr;
+      render(t);
+    }
+
+    // Schedule re-render at next midnight
+    function scheduleMidnight() {
+      const now = new Date();
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      setTimeout(() => {
+        goToday();
+        scheduleMidnight();
+      }, midnight - now);
+    }
+
+    // Scale cross to fit card width on small screens
+    function scaleCross() {
+      const card    = document.querySelector('.card');
+      const wrapper = document.querySelector('.cross-wrapper');
+      const style   = window.getComputedStyle(card);
+      const available = card.clientWidth
+                        - parseFloat(style.paddingLeft)
+                        - parseFloat(style.paddingRight);
+      const base  = 320;
+      const scale = Math.min(1, available / base);
+      wrapper.style.transform       = `scale(${scale})`;
+      wrapper.style.transformOrigin = 'top center';
+      wrapper.style.marginBottom    = `${(scale - 1) * base}px`;
+    }
+    window.addEventListener('resize', scaleCross);
+
+    // Boot
+    goToday();
+    scaleCross();
+    scheduleMidnight();
+  </script>
+</body>
+</html>
