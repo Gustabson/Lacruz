@@ -244,6 +244,9 @@
         justify-content: center;
         overflow: hidden;
       }
+      @media (max-width: 767px) {
+        body { display: block; height: auto; }
+      }
       .card {
         box-shadow: none;
         border: none;
@@ -473,6 +476,26 @@
       wrapper.style.marginBottom    = `${(scale - 1) * base}px`;
     }
     window.addEventListener('resize', scaleCross);
+
+    // Ajuste de cruz antes/después de imprimir
+    const PRINT_BASE = 730;
+    window.addEventListener('beforeprint', function () {
+      const wrapper = document.querySelector('.cross-wrapper');
+      const available = window.innerWidth * 0.88;
+      const scale = Math.min(1, available / PRINT_BASE);
+      wrapper.style.setProperty('width',  PRINT_BASE + 'px', 'important');
+      wrapper.style.setProperty('height', PRINT_BASE + 'px', 'important');
+      wrapper.style.setProperty('transform', `scale(${scale})`, 'important');
+      wrapper.style.setProperty('transform-origin', 'top center', 'important');
+      wrapper.style.setProperty('margin-bottom', `${(scale - 1) * PRINT_BASE}px`, 'important');
+    });
+    window.addEventListener('afterprint', function () {
+      const wrapper = document.querySelector('.cross-wrapper');
+      ['width','height','transform','transform-origin','margin-bottom'].forEach(p =>
+        wrapper.style.removeProperty(p)
+      );
+      scaleCross();
+    });
 
     // Boot
     goToday();
